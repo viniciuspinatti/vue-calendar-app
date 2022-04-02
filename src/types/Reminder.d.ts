@@ -8,5 +8,13 @@ declare global {
       datetime: string;
       city: string;
     };
+
+    type City = {
+      name: string;
+      stateCode: string;
+      country: string;
+      lat: number;
+      lon: number;
+    };
   }
 }

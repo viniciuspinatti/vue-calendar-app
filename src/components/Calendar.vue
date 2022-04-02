@@ -36,7 +36,8 @@ import { Component, Vue } from "vue-property-decorator";
 import dayjs from "dayjs";
 import CurrentDate from "./CurrentDate.vue";
 import DateHelper from "@/helpers/DateHelper";
-import Reminder from "./Reminder.vue";
+import Reminder from "./Reminder/Reminder.vue";
+import { mutationsOpenWeather } from "@/store/OpenWeather";
 
 @Component({
   components: {
@@ -59,7 +60,6 @@ export default class Calendar extends Vue {
   get allDaysGroupedByWeeks(): string[][] {
     let weeks: string[][] = [];
     for (let i = 0; i < this.allDays.length; i = i + 7) weeks.push(this.allDays.slice(i, i + 7));
-    console.log("weeks", weeks);
     return weeks;
   }
 

@@ -59,4 +59,8 @@ export default class DateHelper {
       "D"
     )}`;
   }
+
+  static diffBetweenSystemCurrentDate(pDate: string): number {
+    return dayjs().diff(pDate, "day");
+  }
 }

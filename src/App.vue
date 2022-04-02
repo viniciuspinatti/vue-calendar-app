@@ -36,4 +36,9 @@ export default class App extends Vue {}
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+.v-picker__title {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
 </style>
