@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import dayjs from "dayjs";
+import DateHelper from "@/helpers/DateHelper";
 
 @Component
 export default class CurrentDate extends Vue {
@@ -16,9 +16,7 @@ export default class CurrentDate extends Vue {
 
   /* Computed */
   get currentDateFormat(): string {
-    return `Today is ${dayjs(this.currentDate).format("dddd")}, ${dayjs(this.currentDate).format(
-      "MMM"
-    )} ${dayjs(this.currentDate).format("D")}`;
+    return `Today is ${DateHelper.dayWeekWithMonthAndDayMonth(this.currentDate)}`;
   }
 }
 </script>

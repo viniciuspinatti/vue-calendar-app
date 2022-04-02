@@ -23,10 +23,10 @@ export default class DateHelper {
     const beforeMonth = dayjs(pDate).subtract(1, "month");
     const daysInBeforeMonth = beforeMonth.daysInMonth();
 
-    const nextMonth = dayjs(pDate).add(1, "month");
-
+    /* Push all days in format YYYY-MM-DD to this array */
     const allDays: string[] = [];
 
+    /* First we add the last days of before month */
     for (let i = 0; i < dayWeekOfFirstMonthDay; i++) {
       allDays.unshift(
         dayjs(`${dayjs(beforeMonth).format("YYYY-MM")}-${daysInBeforeMonth - i}`).format(
@@ -35,10 +35,14 @@ export default class DateHelper {
       );
     }
 
+    /* Second we add the days of current month */
     for (let i = 1; i <= daysInCurrentMonth; i++) {
       allDays.push(dayjs(`${dayjs(pDate).format("YYYY-MM")}-${i}`).format(this._isoMask));
     }
 
+    const nextMonth = dayjs(pDate).add(1, "month");
+
+    /* For last we add the days of next month */
     let dayNextMonth = 1;
     for (let i = allDays.length; i < maxDaysShowCalendar; i++) {
       allDays.push(
@@ -50,9 +54,9 @@ export default class DateHelper {
     return allDays;
   }
 
-  static dayOfWeekOfFirstDay(pDate: string): number {
-    /* First: we found the year-month of the date parameter */
-    const yearAndMonth = dayjs(pDate).format("YYYY-MM");
-    return dayjs(yearAndMonth + "-01").day();
+  static dayWeekWithMonthAndDayMonth(pDate: string): string {
+    return `${dayjs(pDate).format("dddd")}, ${dayjs(pDate).format("MMM")} ${dayjs(pDate).format(
+      "D"
+    )}`;
   }
 }
