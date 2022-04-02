@@ -1,18 +1,21 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+  <v-app id="app">
+    <v-main class="grey darken-4">
+      <v-container id="calendar-container" class="center pa-0 grey lighten-5">
+        <Calendar />
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "./components/HelloWorld.vue";
+import Calendar from "./components/Calendar.vue";
 
 @Component({
   components: {
-    HelloWorld,
-  },
+    Calendar
+  }
 })
 export default class App extends Vue {}
 </script>
@@ -22,8 +25,15 @@ export default class App extends Vue {}
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  height: 100%;
+}
+
+#calendar-container {
+  width: 60%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
