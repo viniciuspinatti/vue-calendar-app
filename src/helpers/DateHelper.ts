@@ -2,10 +2,11 @@ import dayjs from "dayjs";
 
 export default class DateHelper {
   static _isoMask = "YYYY-MM-DD";
+  static _monthDayMask = "YYYY-MM";
 
   static generateAllMonthDays(pDate: string): string[] {
     /* We found the year-month of the date parameter */
-    const dayWeekOfFirstMonthDay = dayjs(dayjs(pDate).format("YYYY-MM") + "-01").day();
+    const dayWeekOfFirstMonthDay = dayjs(dayjs(pDate).format(this._monthDayMask) + "-01").day();
     const daysInCurrentMonth = dayjs(pDate).daysInMonth();
 
     let maxDaysShowCalendar = 0;
@@ -29,7 +30,7 @@ export default class DateHelper {
     /* First we add the last days of before month */
     for (let i = 0; i < dayWeekOfFirstMonthDay; i++) {
       allDays.unshift(
-        dayjs(`${dayjs(beforeMonth).format("YYYY-MM")}-${daysInBeforeMonth - i}`).format(
+        dayjs(`${dayjs(beforeMonth).format(this._monthDayMask)}-${daysInBeforeMonth - i}`).format(
           this._isoMask
         )
       );
@@ -37,7 +38,7 @@ export default class DateHelper {
 
     /* Second we add the days of current month */
     for (let i = 1; i <= daysInCurrentMonth; i++) {
-      allDays.push(dayjs(`${dayjs(pDate).format("YYYY-MM")}-${i}`).format(this._isoMask));
+      allDays.push(dayjs(`${dayjs(pDate).format(this._monthDayMask)}-${i}`).format(this._isoMask));
     }
 
     const nextMonth = dayjs(pDate).add(1, "month");
@@ -46,7 +47,9 @@ export default class DateHelper {
     let dayNextMonth = 1;
     for (let i = allDays.length; i < maxDaysShowCalendar; i++) {
       allDays.push(
-        dayjs(`${dayjs(nextMonth).format("YYYY-MM")}-${dayNextMonth}`).format(this._isoMask)
+        dayjs(`${dayjs(nextMonth).format(this._monthDayMask)}-${dayNextMonth}`).format(
+          this._isoMask
+        )
       );
       dayNextMonth++;
     }
@@ -61,6 +64,6 @@ export default class DateHelper {
   }
 
   static diffBetweenSystemCurrentDate(pDate: string): number {
-    return dayjs().diff(pDate, "day");
+    return dayjs(pDate).diff(dayjs(), "day");
   }
 }

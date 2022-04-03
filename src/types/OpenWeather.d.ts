@@ -12,7 +12,7 @@ namespace OpenWeather {
     dt: number;
     sunrise: number;
     sunset: number;
-    temp: number;
+    temp: number | AllDayTemperatures;
     feels_like: number;
     pressure: number;
     humidity: number;
@@ -37,6 +37,15 @@ namespace OpenWeather {
     icon: string;
     main: string;
     temp: number;
+  };
+
+  type AllDayTemperatures = {
+    day: number;
+    min: number;
+    max: number;
+    night: number;
+    eve: number;
+    morn: number;
   };
 }
 

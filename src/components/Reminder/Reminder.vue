@@ -1,6 +1,6 @@
 <template>
   <v-card class="pa-4">
-    <v-card-title class="pa-0">
+    <v-card-title class="py-0 px-2 mb-1" :style="{ color: color, 'border-radius': '0px' }">
       {{ action == "ADD" ? "Add new reminder for " : "Edit reminder for "
       }}<span class="font-weight-bold ml-1">{{ dayWeekWithMonthAndDayMonth }}</span>
     </v-card-title>
@@ -13,7 +13,7 @@
           v-model="citySelected"
           :item-text="citiesListText"
         ></v-combobox>
-        <span class="body-1">Choose a color for reminder</span>
+        <p class="body-1 mb-0">Choose a color for reminder</p>
         <v-color-picker
           mode="hexa"
           v-model="color"
@@ -30,16 +30,23 @@
             ['#E65100', '#4A148C', '#1A237E']
           ]"
         ></v-color-picker>
+        <p class="body-1" style="display: block">Weather Forecast</p>
+        <v-row v-if="citySelected && !isUpdatingWeather" class="pl-3">
+          <Weather :weather="weather" v-if="hasRangeForShowWeather && weather" />
+          <v-alert v-else icon="mdi-alert" color="orange darken-3" outlined dense
+            >Weather forecast not available for this date</v-alert
+          >
+        </v-row>
       </v-col>
       <v-col cols="5">
-        <v-time-picker color="light-blue darken-1" v-model="time"></v-time-picker>
+        <v-time-picker :color="color" v-model="time"></v-time-picker>
       </v-col>
     </v-row>
     <v-card-actions class="pt-4 pb-0 px-0">
       <v-row>
         <v-col cols="12" class="text-right">
           <v-btn outlined color="grey darken-4" class="mr-4" @click="close">Close</v-btn>
-          <v-btn outlined color="light-blue darken-1">Save</v-btn>
+          <v-btn outlined color="light-blue darken-1" @click="addOrUpdateReminder()">Save</v-btn>
         </v-col>
       </v-row>
     </v-card-actions>
@@ -50,14 +57,19 @@
 import DateHelper from "@/helpers/DateHelper";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import cities from "@/const/cities.json";
-import { actionsOpenWeather } from "@/store/OpenWeather";
+import { actionsOpenWeather, gettersOpenWeather } from "@/store/OpenWeather";
 import OpenWeather from "@/types/OpenWeather";
+import Weather from "@/components/Reminder/Weather.vue";
+import { gettersReminder, mutationsReminder } from "@/store/Reminder";
 
-@Component({})
+@Component({
+  components: {
+    Weather
+  }
+})
 export default class Reminder extends Vue {
   @Prop({}) currentDateSelected!: string;
-  @Prop({}) action!: "ADD" | "EDIT";
-  @Prop({}) reminder!: Reminder.Reminder;
+  @Prop({}) reminder!: Reminder.Reminder | Reminder.ReminderAdded;
 
   id = 0;
   description = "";
@@ -67,10 +79,20 @@ export default class Reminder extends Vue {
   hasRangeForShowWeather = false;
   color = "#333333";
   weather: null | OpenWeather.SkyWithTemperature = null;
+  isUpdatingWeather = false;
+  action: "ADD" | "EDIT" = "ADD";
 
   /* Computed */
   get dayWeekWithMonthAndDayMonth(): string {
     return DateHelper.dayWeekWithMonthAndDayMonth(this.currentDateSelected);
+  }
+
+  get allReminders(): Reminder.ReminderAdded[] {
+    return gettersReminder.getAllReminders();
+  }
+
+  get skyWeatherForCurrentSystemDateUpTo7Days(): OpenWeather.SkyWithTemperature[] {
+    return gettersOpenWeather.getSkyWeatherForCurrentSystemDateUpTo7Days();
   }
 
   /* Methods */
@@ -85,20 +107,49 @@ export default class Reminder extends Vue {
   }
 
   async updateWeather(pCity: Reminder.City): Promise<void> {
-    /* Verify if the difference between current  */
+    this.isUpdatingWeather = true;
+    /* Verify if the difference between current systeam and selected date is between 0 and 7. 
+    This is needed because open weather with free account just return to me 7 days forward*/
     const diffBetweenSelectedAndCurrentDate = DateHelper.diffBetweenSystemCurrentDate(
       this.currentDateSelected
     );
+
     const diffIsInRageOfOpenWeatherResponse =
       diffBetweenSelectedAndCurrentDate >= 0 && diffBetweenSelectedAndCurrentDate <= 7;
 
     if (diffIsInRageOfOpenWeatherResponse) {
       await actionsOpenWeather.fetchOneCall(pCity.lat, pCity.lon);
 
+      this.weather =
+        this.skyWeatherForCurrentSystemDateUpTo7Days[diffBetweenSelectedAndCurrentDate];
+
       this.hasRangeForShowWeather = true;
     } else {
       this.hasRangeForShowWeather = false;
     }
+    this.isUpdatingWeather = false;
+  }
+
+  addOrUpdateReminder(): void {
+    const customReminder = {
+      id: this.id,
+      description: this.description,
+      time: this.time,
+      city: this.citySelected,
+      color: this.color,
+      weather: this.weather,
+      date: this.currentDateSelected
+    };
+    if (this.action == "ADD") {
+      mutationsReminder.addNewReminder(customReminder);
+    } else {
+      const idxReminder = this.allReminders.findIndex((reminder) => reminder.id == this.id);
+      if (idxReminder > -1) {
+        mutationsReminder.updateReminder(customReminder, idxReminder);
+      }
+    }
+
+    this.close();
   }
 
   close(): void {
@@ -114,10 +165,14 @@ export default class Reminder extends Vue {
   }
 
   @Watch("reminder", { immediate: true, deep: true }) onReminder(
-    newReminder: Reminder.Reminder
+    newReminder: Reminder.Reminder | Reminder.ReminderAdded
   ): void {
-    if (this.action == "ADD") {
-      this.id = newReminder.id;
+    if (!Object.prototype.hasOwnProperty.call(newReminder, "id")) {
+      this.action = "ADD";
+
+      this.id = this.allReminders.length
+        ? this.allReminders[this.allReminders.length - 1].id + 1
+        : 1;
       this.description = newReminder.description;
       this.time = newReminder.time;
       this.citySelected = newReminder.city;

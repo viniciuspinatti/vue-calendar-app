@@ -3,13 +3,17 @@ export {};
 declare global {
   namespace Reminder {
     type Reminder = {
-      id: number;
       description: string;
       time: string;
       city: City | null;
       color: string;
       weather: OpenWeather.SkyWithTemperature | null;
+      date: string;
     };
+
+    interface ReminderAdded extends Reminder {
+      id: number;
+    }
 
     type City = {
       name: string;
