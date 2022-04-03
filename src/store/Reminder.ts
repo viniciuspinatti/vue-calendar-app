@@ -19,5 +19,11 @@ export const mutationsReminder = {
   },
   updateReminder: (updatedReminder: Reminder.Reminder, position: number): void => {
     state.allReminders[position] = updatedReminder;
+  },
+  removeReminder: (idReminder: number): void => {
+    const idx = state.allReminders.findIndex((reminder) => reminder.id == idReminder);
+    if (idx > -1) {
+      state.allReminders.splice(idx, 1);
+    }
   }
 };

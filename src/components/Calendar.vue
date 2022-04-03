@@ -26,14 +26,28 @@
         :key="day.date"
         @click="clickToAddReminder(day.date)"
       >
-        <div>
-          <span class="mt-1 ml-2" :class="customClasses(day.date)">{{ monthDay(day.date) }}</span>
+        <div style="min-height: 30px; display: flex; align-items: center">
+          <v-row no-gutters>
+            <v-col cols="9" class="mt-2">
+              <span class="ml-2" :class="customClasses(day.date)">{{ monthDay(day.date) }}</span>
+            </v-col>
+            <v-col cols="2" v-if="day.reminders.length">
+              <v-btn
+                class="text-right"
+                color="red darken-2"
+                icon
+                @click.stop="deleteAllByDate(day.date)"
+              >
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
         </div>
         <div
           v-for="rem in day.reminders"
           :key="rem.id"
-          class="pl-6 body-2 white--text day-reminders"
-          :style="{ 'background-color': rem.color }"
+          class="pl-5 body-2 white--text day-reminders"
+          :style="{ 'background-color': rem.color, 'max-width': '90%' }"
           :title="rem.description"
           @click.stop="clickToEditReminder(rem)"
         >
@@ -58,7 +72,7 @@ import CurrentDate from "./CurrentDate.vue";
 import DateHelper from "@/helpers/DateHelper";
 import Reminder from "./Reminder/Reminder.vue";
 import CalendarReminder from "@/types/CalendarReminder";
-import { gettersReminder } from "@/store/Reminder";
+import { gettersReminder, mutationsReminder } from "@/store/Reminder";
 
 @Component({
   components: {
@@ -161,6 +175,13 @@ export default class Calendar extends Vue {
   closeDialogAndResetReminder(): void {
     this.showAddReminderDialog = false;
     this.reminder = null;
+  }
+
+  deleteAllByDate(pDate: string): void {
+    const allIdsRemindersInDate = this.allReminders
+      .filter((rem) => rem.date == pDate)
+      .map((rem) => rem.id);
+    allIdsRemindersInDate.forEach((id) => mutationsReminder.removeReminder(id as number));
   }
 
   customClasses(pDate: string): string[] {

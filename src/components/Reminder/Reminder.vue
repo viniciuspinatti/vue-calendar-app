@@ -30,7 +30,7 @@
             ['#E65100', '#4A148C', '#1A237E']
           ]"
         ></v-color-picker>
-        <p class="body-1" style="display: block">Weather Forecast</p>
+        <p class="body-1 mb-2" style="display: block">Weather Forecast</p>
         <v-row v-if="citySelected && !isUpdatingWeather" class="pl-3">
           <Weather :weather="weather" v-if="hasRangeForShowWeather && weather" />
           <v-alert v-else icon="mdi-alert" color="orange darken-3" outlined dense
@@ -46,6 +46,9 @@
       <v-row>
         <v-col cols="12" class="text-right">
           <v-btn outlined color="grey darken-4" class="mr-4" @click="close">Close</v-btn>
+          <v-btn outlined color="red darken-2" class="mr-4" v-if="action == 'EDIT'" @click="remove">
+            Delete
+          </v-btn>
           <v-btn outlined color="light-blue darken-1" @click="addOrUpdateReminder()"
             >{{ action == "ADD" ? "Add" : "Update" }}
           </v-btn>
@@ -154,6 +157,11 @@ export default class Reminder extends Vue {
     this.close();
   }
 
+  remove(): void {
+    mutationsReminder.removeReminder(this.id);
+    this.close();
+  }
+
   close(): void {
     this.$emit("close");
   }
@@ -178,21 +186,16 @@ export default class Reminder extends Vue {
         this.id = this.allReminders.length
           ? (this.allReminders[this.allReminders.length - 1].id as number) + 1
           : 1;
-        this.description = newReminder.description;
-        this.time = newReminder.time;
-        this.citySelected = newReminder.city;
-        this.color = newReminder.color;
-        this.weather = newReminder.weather;
       } else {
         this.action = "EDIT";
 
         this.id = newReminder.id;
-        this.description = newReminder.description;
-        this.time = newReminder.time;
-        this.citySelected = newReminder.city;
-        this.color = newReminder.color;
-        this.weather = newReminder.weather;
       }
+      this.description = newReminder.description;
+      this.time = newReminder.time;
+      this.citySelected = newReminder.city;
+      this.color = newReminder.color;
+      this.weather = newReminder.weather;
     }
   }
 }
