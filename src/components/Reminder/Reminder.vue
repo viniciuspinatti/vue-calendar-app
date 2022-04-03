@@ -46,7 +46,9 @@
       <v-row>
         <v-col cols="12" class="text-right">
           <v-btn outlined color="grey darken-4" class="mr-4" @click="close">Close</v-btn>
-          <v-btn outlined color="light-blue darken-1" @click="addOrUpdateReminder()">Save</v-btn>
+          <v-btn outlined color="light-blue darken-1" @click="addOrUpdateReminder()"
+            >{{ action == "ADD" ? "Add" : "Update" }}
+          </v-btn>
         </v-col>
       </v-row>
     </v-card-actions>
@@ -69,7 +71,7 @@ import { gettersReminder, mutationsReminder } from "@/store/Reminder";
 })
 export default class Reminder extends Vue {
   @Prop({}) currentDateSelected!: string;
-  @Prop({}) reminder!: Reminder.Reminder | Reminder.ReminderAdded;
+  @Prop({}) reminder!: Reminder.Reminder;
 
   id = 0;
   description = "";
@@ -87,7 +89,7 @@ export default class Reminder extends Vue {
     return DateHelper.dayWeekWithMonthAndDayMonth(this.currentDateSelected);
   }
 
-  get allReminders(): Reminder.ReminderAdded[] {
+  get allReminders(): Reminder.Reminder[] {
     return gettersReminder.getAllReminders();
   }
 
@@ -165,19 +167,32 @@ export default class Reminder extends Vue {
   }
 
   @Watch("reminder", { immediate: true, deep: true }) onReminder(
-    newReminder: Reminder.Reminder | Reminder.ReminderAdded
+    newReminder: Reminder.Reminder | null
   ): void {
-    if (!Object.prototype.hasOwnProperty.call(newReminder, "id")) {
-      this.action = "ADD";
+    /* Reminder in calendar will reset to null after close dialog */
+    if (newReminder) {
+      if (!newReminder.id) {
+        this.action = "ADD";
 
-      this.id = this.allReminders.length
-        ? this.allReminders[this.allReminders.length - 1].id + 1
-        : 1;
-      this.description = newReminder.description;
-      this.time = newReminder.time;
-      this.citySelected = newReminder.city;
-      this.color = newReminder.color;
-      this.weather = newReminder.weather;
+        /* If reminders list is empty, will create the first reminder with 1. Else plus 1 in the last id; */
+        this.id = this.allReminders.length
+          ? (this.allReminders[this.allReminders.length - 1].id as number) + 1
+          : 1;
+        this.description = newReminder.description;
+        this.time = newReminder.time;
+        this.citySelected = newReminder.city;
+        this.color = newReminder.color;
+        this.weather = newReminder.weather;
+      } else {
+        this.action = "EDIT";
+
+        this.id = newReminder.id;
+        this.description = newReminder.description;
+        this.time = newReminder.time;
+        this.citySelected = newReminder.city;
+        this.color = newReminder.color;
+        this.weather = newReminder.weather;
+      }
     }
   }
 }
