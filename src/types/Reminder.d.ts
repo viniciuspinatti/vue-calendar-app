@@ -5,8 +5,10 @@ declare global {
     type Reminder = {
       id: number;
       description: string;
-      datetime: string;
-      city: string;
+      time: string;
+      city: City | null;
+      color: string;
+      weather: OpenWeather.SkyWithTemperature | null;
     };
 
     type City = {

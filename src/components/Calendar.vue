@@ -15,7 +15,15 @@
       v-for="(week, weekNum) in allDaysGroupedByWeeks"
       :key="weekNum"
     >
-      <v-dialog max-width="750" v-for="day in week" :key="day">
+      <div
+        class="calender-columns-container-item day"
+        v-for="day in week"
+        :key="day"
+        @click="clickToAddReminder(day)"
+      >
+        <span class="ml-2">{{ monthDay(day) }}</span>
+      </div>
+      <!-- <v-dialog max-width="750" v-for="day in week" :key="day">
         <template v-slot:activator="{ on }">
           <div
             class="calender-columns-container-item day"
@@ -26,8 +34,16 @@
           </div>
         </template>
         <Reminder :currentDateSelected="currentDateSelected" :action="'ADD'" />
-      </v-dialog>
+      </v-dialog> -->
     </div>
+    <v-dialog max-width="750" v-model="showAddReminderDialog">
+      <Reminder
+        :currentDateSelected="currentDateSelected"
+        :action="'ADD'"
+        :reminder="reminder"
+        @close="showAddReminderDialog = false"
+      />
+    </v-dialog>
   </div>
 </template>
 
@@ -37,7 +53,7 @@ import dayjs from "dayjs";
 import CurrentDate from "./CurrentDate.vue";
 import DateHelper from "@/helpers/DateHelper";
 import Reminder from "./Reminder/Reminder.vue";
-import { mutationsOpenWeather } from "@/store/OpenWeather";
+import { gettersReminder } from "@/store/Reminder";
 
 @Component({
   components: {
@@ -51,6 +67,7 @@ export default class Calendar extends Vue {
   allDays: string[] = [];
   showAddReminderDialog = false;
   currentDateSelected = dayjs().format("YYYY-MM-DD");
+  reminder: null | Reminder.Reminder = null;
 
   mounted(): void {
     this.allDays = DateHelper.generateAllMonthDays(this.currentDate);
@@ -63,12 +80,27 @@ export default class Calendar extends Vue {
     return weeks;
   }
 
+  get allReminders(): Reminder.Reminder[] {
+    return gettersReminder.getAllReminders();
+  }
+
   /* Methods */
   monthDay(pDate: string): string {
     return dayjs(pDate).format("D");
   }
 
   clickToAddReminder(pDate: string): void {
+    const remindersListSize = this.allReminders.length;
+
+    this.reminder = {
+      id: remindersListSize ? this.allReminders[remindersListSize - 1].id + 1 : 1,
+      description: "",
+      time: "12:00",
+      city: null,
+      color: "#333333",
+      weather: null
+    };
+
     this.currentDateSelected = pDate;
     this.showAddReminderDialog = true;
   }
