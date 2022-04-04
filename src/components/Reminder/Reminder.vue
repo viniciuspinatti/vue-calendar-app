@@ -38,9 +38,13 @@
           ]"
         ></v-color-picker>
         <p class="body-1 mb-2" style="display: block">Weather Forecast</p>
-        <v-row v-if="citySelected && !isUpdatingWeather" class="pl-3">
+        <v-row
+          v-if="citySelected && !isUpdatingWeather"
+          class="pl-3"
+          data-testid="reminder-weather"
+        >
           <Weather :weather="weather" v-if="hasRangeForShowWeather && weather" />
-          <v-alert v-else icon="mdi-alert" color="orange darken-3" outlined dense
+          <v-alert v-else class="mt-1" icon="mdi-alert" color="orange darken-3" outlined dense
             >Weather forecast not available for this date</v-alert
           >
         </v-row>

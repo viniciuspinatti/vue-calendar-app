@@ -56,7 +56,6 @@ export const actionsOpenWeather = {
           });
 
           mutationsOpenWeather.setSkyWeatherForCurrentSystemDateUpTo7Days(skyWeatherList);
-
           resolve(resp);
         });
     });

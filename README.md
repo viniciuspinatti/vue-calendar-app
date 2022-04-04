@@ -1,4 +1,8 @@
 # calendar-app
+A simple calendar that you can set yours reminders.
+
+### Note
+To get weather forecast, put your API key from [OpenWeather](https://openweathermap.org/) in VUE_APP_OPEN_WEATHER_KEY (you can remove the single quotes).
 
 ## Project setup
 ```

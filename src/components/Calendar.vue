@@ -2,8 +2,18 @@
   <div>
     <CurrentDate :currentDate="currentDate" />
     <v-row no-gutters>
-      <v-col cols="12" class="text-center title white--text">
+      <v-col cols="3" class="text-right">
+        <v-btn color="grey darken-4" @click="changeMonth(-1)" icon
+          ><v-icon>mdi-arrow-left-bold</v-icon></v-btn
+        >
+      </v-col>
+      <v-col cols="6" class="text-center title white--text">
         <span style="color: #263238">{{ currentMonthFullName(currentDateSelected) }}</span>
+      </v-col>
+      <v-col cols="3" class="text-left">
+        <v-btn color="grey darken-4" @click="changeMonth(1)" icon
+          ><v-icon>mdi-arrow-right-bold</v-icon></v-btn
+        >
       </v-col>
     </v-row>
     <div class="calender-columns-container">
@@ -21,7 +31,7 @@
       :key="weekNum"
     >
       <div
-        class="calender-columns-container-item day"
+        class="calender-columns-container-item day cursor-pointer"
         v-for="day in week"
         :key="day.date"
         @click="clickToAddReminder(day.date)"
@@ -36,6 +46,7 @@
                 class="text-right"
                 color="red darken-2"
                 icon
+                title="Delete all"
                 @click.stop="deleteAllByDate(day.date)"
               >
                 <v-icon>mdi-delete</v-icon>
@@ -134,11 +145,18 @@ export default class Calendar extends Vue {
   }
 
   currentMonthFullName(pDate: string): string {
-    return dayjs(pDate).format("MMMM");
+    return `${dayjs(pDate).format("MMMM")}, ${dayjs(pDate).format("YYYY")}`;
   }
 
   monthD(pDate: string): string {
     return dayjs(pDate).format("D");
+  }
+
+  changeMonth(pValue: number): void {
+    this.currentDateSelected = dayjs(this.currentDateSelected)
+      .add(pValue, "month")
+      .format("YYYY-MM-DD");
+    this.generateDaysWithReminders();
   }
 
   clickToAddReminder(pDate: string): void {
@@ -227,12 +245,14 @@ export default class Calendar extends Vue {
   border-bottom: 1px solid #ccc;
   height: 100px;
   max-height: 100px;
-  cursor: pointer;
   overflow-y: auto;
 }
 .day-reminders {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

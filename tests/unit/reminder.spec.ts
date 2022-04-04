@@ -5,7 +5,7 @@ import cities from "../../src/const/cities.json";
 import dayjs from "dayjs";
 
 describe("Reminder.vue", () => {
-  it("should render reminder input fields", async () => {
+  it("should render reminder input fields", () => {
     const wrapper = mount(Reminder, {
       localVue: createLocalVue(),
       vuetify: new Vuetify()
@@ -17,24 +17,10 @@ describe("Reminder.vue", () => {
     expect(wrapper.find('[data-testid="reminder-time"]').exists()).toBe(true);
   });
 
-  test("should set/has the values to reminder", async () => {
+  it("init a reminder, put data that generate weather and add in reminders list", async () => {
     const wrapper = mount(Reminder, {
       localVue: createLocalVue(),
       vuetify: new Vuetify(),
-      data() {
-        return {
-          id: 0,
-          description: "",
-          time: "12:00",
-          citiesList: cities,
-          citySelected: null,
-          hasRangeForShowWeather: false,
-          color: "#333333",
-          weather: null,
-          isUpdatingWeather: false,
-          action: "ADD"
-        };
-      },
       propsData: {
         currentDateSelected: dayjs().format("YYYY-MM-DD"),
         reminder: null
@@ -43,8 +29,9 @@ describe("Reminder.vue", () => {
 
     await wrapper.find('[data-testid="reminder-description"]').setValue("My Reminder");
     expect(wrapper.vm.$data.description).toBe("My Reminder");
+    expect(wrapper.vm.$data.weather).toBe(null);
+    expect(wrapper.find('[data-testid="reminder-weather"]').exists()).toBeFalsy();
 
-    await wrapper.vm.$nextTick();
     await wrapper.setData({
       citySelected: {
         name: "Birigui",
@@ -56,5 +43,14 @@ describe("Reminder.vue", () => {
     });
 
     expect(wrapper.vm.$data.citySelected.name).toBe("Birigui");
+    await wrapper.setData({
+      isUpdatingWeather: false
+    });
+
+    expect(wrapper.find('[data-testid="reminder-weather"]').exists()).toBeTruthy();
+    const color = wrapper.findAll(".v-color-picker__swatch").at(0).find(".v-color-picker__color");
+    await color.trigger("click");
+    expect(wrapper.vm.$data.color).toBe("#B71C1C");
+    expect(wrapper.vm.$data.time).toBe("12:00");
   });
 });
