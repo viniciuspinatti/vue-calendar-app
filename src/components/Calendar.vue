@@ -70,7 +70,7 @@
       <Reminder
         :currentDateSelected="currentDateSelected"
         :reminder="reminder"
-        @close="closeDialogAndResetReminder()"
+        @close="closeDialogAndResetReminder"
       />
     </v-dialog>
   </div>
@@ -190,16 +190,19 @@ export default class Calendar extends Vue {
     this.showAddReminderDialog = true;
   }
 
-  closeDialogAndResetReminder(): void {
-    this.showAddReminderDialog = false;
-    this.reminder = null;
-  }
-
   deleteAllByDate(pDate: string): void {
     const allIdsRemindersInDate = this.allReminders
       .filter((rem) => rem.date == pDate)
       .map((rem) => rem.id);
+
     allIdsRemindersInDate.forEach((id) => mutationsReminder.removeReminder(id as number));
+    this.generateDaysWithReminders();
+  }
+
+  closeDialogAndResetReminder(pNeededRegenerateReminders: boolean): void {
+    pNeededRegenerateReminders && this.generateDaysWithReminders();
+    this.showAddReminderDialog = false;
+    this.reminder = null;
   }
 
   customClasses(pDate: string): string[] {
@@ -217,9 +220,9 @@ export default class Calendar extends Vue {
     return classes;
   }
 
-  @Watch("allReminders", { immediate: true, deep: true }) onAllReminders(): void {
-    this.generateDaysWithReminders();
-  }
+  // @Watch("allReminders", { immediate: true, deep: true }) onAllReminders(): void {
+  //   this.generateDaysWithReminders();
+  // }
 }
 </script>
 

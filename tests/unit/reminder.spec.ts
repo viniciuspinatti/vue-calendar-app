@@ -29,7 +29,6 @@ describe("Reminder.vue", () => {
 
     await wrapper.find('[data-testid="reminder-description"]').setValue("My Reminder");
     expect(wrapper.vm.$data.description).toBe("My Reminder");
-    expect(wrapper.vm.$data.weather).toBe(null);
     expect(wrapper.find('[data-testid="reminder-weather"]').exists()).toBeFalsy();
 
     await wrapper.setData({

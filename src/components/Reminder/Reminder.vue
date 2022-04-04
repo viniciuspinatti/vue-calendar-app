@@ -156,6 +156,7 @@ export default class Reminder extends Vue {
       weather: this.weather,
       date: this.currentDateSelected
     };
+
     if (this.action == "ADD") {
       mutationsReminder.addNewReminder(customReminder);
     } else {
@@ -165,16 +166,16 @@ export default class Reminder extends Vue {
       }
     }
 
-    this.close();
+    this.close(true);
   }
 
   remove(): void {
     mutationsReminder.removeReminder(this.id);
-    this.close();
+    this.close(true);
   }
 
-  close(): void {
-    this.$emit("close");
+  close(pNeededRegenerateReminders = false): void {
+    this.$emit("close", pNeededRegenerateReminders);
   }
 
   @Watch("citySelected", { deep: true }) onCitySelected(
