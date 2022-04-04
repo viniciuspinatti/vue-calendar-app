@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import OpenWeather from "@/types/OpenWeather";
+import OpenWeather from "../../types/OpenWeather";
 
 @Component({})
 export default class Weather extends Vue {

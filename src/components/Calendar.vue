@@ -69,10 +69,10 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import dayjs from "dayjs";
 import CurrentDate from "./CurrentDate.vue";
-import DateHelper from "@/helpers/DateHelper";
+import DateHelper from "../helpers/DateHelper";
 import Reminder from "./Reminder/Reminder.vue";
-import CalendarReminder from "@/types/CalendarReminder";
-import { gettersReminder, mutationsReminder } from "@/store/Reminder";
+import CalendarReminder from "../types/CalendarReminder";
+import { gettersReminder, mutationsReminder } from "../store/Reminder";
 
 @Component({
   components: {

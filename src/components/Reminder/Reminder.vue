@@ -6,12 +6,18 @@
     </v-card-title>
     <v-row>
       <v-col cols="7">
-        <v-text-field label="Description" maxlength="30" v-model="description" />
+        <v-text-field
+          label="Description"
+          maxlength="30"
+          data-testid="reminder-description"
+          v-model="description"
+        />
         <v-combobox
           label="Choose a city"
           :items="citiesList"
           v-model="citySelected"
           :item-text="citiesListText"
+          data-testid="reminder-city-selected"
         ></v-combobox>
         <p class="body-1 mb-0">Choose a color for reminder</p>
         <v-color-picker
@@ -22,6 +28,7 @@
           hide-canvas
           hide-sliders
           hide-inputs
+          data-testid="reminder-color"
           :swatches="[
             ['#B71C1C', '#C62828', '#D32F2F'],
             ['#01579B', '#0277BD', '#0288D1'],
@@ -39,7 +46,7 @@
         </v-row>
       </v-col>
       <v-col cols="5">
-        <v-time-picker :color="color" v-model="time"></v-time-picker>
+        <v-time-picker data-testid="reminder-time" :color="color" v-model="time"></v-time-picker>
       </v-col>
     </v-row>
     <v-card-actions class="pt-4 pb-0 px-0">
@@ -59,11 +66,11 @@
 </template>
 
 <script lang="ts">
-import DateHelper from "@/helpers/DateHelper";
+import DateHelper from "../../helpers/DateHelper";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import cities from "@/const/cities.json";
 import { actionsOpenWeather, gettersOpenWeather } from "@/store/OpenWeather";
-import OpenWeather from "@/types/OpenWeather";
+import OpenWeather from "../../types/OpenWeather";
 import Weather from "@/components/Reminder/Weather.vue";
 import { gettersReminder, mutationsReminder } from "@/store/Reminder";
 
