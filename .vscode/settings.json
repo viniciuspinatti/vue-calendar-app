@@ -1,0 +1,16 @@
+{
+  "eslint.validate": [
+    "vue",
+    "html",
+    "javascript",
+    "typescript"
+  ],
+  "eslint.alwaysShowStatus": true,
+  "editor.tabSize": 2,
+  "workbench.editor.limit.enabled": true,
+  "workbench.editor.limit.value": 8,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}
+  
