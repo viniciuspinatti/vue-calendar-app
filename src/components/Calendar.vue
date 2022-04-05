@@ -70,6 +70,7 @@
       <Reminder
         :currentDateSelected="currentDateSelected"
         :reminder="reminder"
+        :allReminders="allReminders"
         @close="closeDialogAndResetReminder"
       />
     </v-dialog>
@@ -77,7 +78,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import dayjs from "dayjs";
 import CurrentDate from "./CurrentDate.vue";
 import DateHelper from "../helpers/DateHelper";
@@ -219,10 +220,6 @@ export default class Calendar extends Vue {
     }
     return classes;
   }
-
-  // @Watch("allReminders", { immediate: true, deep: true }) onAllReminders(): void {
-  //   this.generateDaysWithReminders();
-  // }
 }
 </script>
 

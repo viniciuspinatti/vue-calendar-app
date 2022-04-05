@@ -1,5 +1,5 @@
 <template>
-  <v-card class="pa-4">
+  <v-card class="pa-4" data-testid="reminder-modal">
     <v-card-title class="py-0 px-2 mb-1" :style="{ color: color, 'border-radius': '0px' }">
       {{ action == "ADD" ? "Add new reminder for " : "Edit reminder for "
       }}<span class="font-weight-bold ml-1">{{ dayWeekWithMonthAndDayMonth }}</span>
@@ -44,7 +44,14 @@
           data-testid="reminder-weather"
         >
           <Weather :weather="weather" v-if="hasRangeForShowWeather && weather" />
-          <v-alert v-else class="mt-1" icon="mdi-alert" color="orange darken-3" outlined dense
+          <v-alert
+            v-else
+            class="mt-1"
+            icon="mdi-alert"
+            color="orange darken-3"
+            outlined
+            dense
+            data-testid="reminder-no-weather-forecast"
             >Weather forecast not available for this date</v-alert
           >
         </v-row>
@@ -60,7 +67,11 @@
           <v-btn outlined color="red darken-2" class="mr-4" v-if="action == 'EDIT'" @click="remove">
             Delete
           </v-btn>
-          <v-btn outlined color="light-blue darken-1" @click="addOrUpdateReminder()"
+          <v-btn
+            outlined
+            color="light-blue darken-1"
+            data-testid="reminder-btn-save-update"
+            @click="addOrUpdateReminder()"
             >{{ action == "ADD" ? "Add" : "Update" }}
           </v-btn>
         </v-col>
@@ -76,7 +87,7 @@ import cities from "@/const/cities.json";
 import { actionsOpenWeather, gettersOpenWeather } from "@/store/OpenWeather";
 import OpenWeather from "../../types/OpenWeather";
 import Weather from "@/components/Reminder/Weather.vue";
-import { gettersReminder, mutationsReminder } from "@/store/Reminder";
+import { mutationsReminder } from "@/store/Reminder";
 
 @Component({
   components: {
@@ -86,6 +97,7 @@ import { gettersReminder, mutationsReminder } from "@/store/Reminder";
 export default class Reminder extends Vue {
   @Prop({}) currentDateSelected!: string;
   @Prop({}) reminder!: Reminder.Reminder;
+  @Prop({}) allReminders!: Reminder.Reminder[];
 
   id = 0;
   description = "";
@@ -101,10 +113,6 @@ export default class Reminder extends Vue {
   /* Computed */
   get dayWeekWithMonthAndDayMonth(): string {
     return DateHelper.dayWeekWithMonthAndDayMonth(this.currentDateSelected);
-  }
-
-  get allReminders(): Reminder.Reminder[] {
-    return gettersReminder.getAllReminders();
   }
 
   get skyWeatherForCurrentSystemDateUpTo7Days(): OpenWeather.SkyWithTemperature[] {
@@ -149,7 +157,7 @@ export default class Reminder extends Vue {
   addOrUpdateReminder(): void {
     const customReminder = {
       id: this.id,
-      description: this.description,
+      description: this.description ? this.description : "No description",
       time: this.time,
       city: this.citySelected,
       color: this.color,
